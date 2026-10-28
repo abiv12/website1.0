@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="format-detection" content="telephone=no,date=no,address=no,email=no">
+  <meta name="description" content="Diary and upcoming work from Thomas, freelance viola player.">
+  <title>Diary | Thomas / viola</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="diary/style.css">
+  <link rel="stylesheet" href="styles.css">
+  <script src="script.js" defer></script>
+</head>
+<body class="music-diary-page">
+  <header class="site-header">
+    <nav class="site-nav" aria-label="Primary navigation">
+      <a href="home.html">Home</a>
+      <a href="biography.html">About</a>
+      <a href="biography.html#videos">Videos</a>
+      <a class="active" href="diary.html">Diary</a>
+      <a href="where.html">Where</a>
+      <a href="composition.html">Composition</a>
+      <a href="photos.html">Photos</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+  <main>
+    <header class="diary-hero">
+      <div>
+        <h1>Diary</h1>
+      </div>
+    </header>
+
+    <div class="diary-container">
+      <section class="toolbar" aria-label="Filter diary events">
+        <div class="filters">
+          <button class="filter active" type="button" data-filter="all">All</button>
+          <button class="filter" type="button" data-filter="upcoming">Upcoming</button>
+          <button class="filter" type="button" data-filter="past">Past</button>
+        </div>
+        <input id="searchInput" type="search" placeholder="Search events..." aria-label="Search events">
+      </section>
+
+      <section id="eventsList" class="events-list" aria-live="polite"></section>
+      <div id="emptyState" class="empty hidden">
+        <div class="empty-icon">♪</div>
+        <h2>No events found</h2>
+        <p>Add your first concert or change your search.</p>
+      </div>
+    </div>
+  </main>
+
+  <script src="events-2026.js"></script>
+  <script src="diary/events-data.js"></script>
+  <script src="diary/display.js"></script>
+  <footer class="site-footer section-wrap"><span>© Thomas Kettle 2026<br>Photos by Lucien Paul Stanfield unless stated</span></footer>
+</body>
+</html>

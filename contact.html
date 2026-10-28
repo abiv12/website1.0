@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Contact Thomas Kettle.">
+  <title>Contact | Thomas Kettle</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script src="script.js" defer></script>
+  <script src="contact-form.js" defer></script>
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav" aria-label="Primary navigation">
+      <a href="home.html">Home</a>
+      <a href="biography.html">About</a>
+      <a href="biography.html#videos">Videos</a>
+      <a href="diary.html">Diary</a>
+      <a href="where.html">Where</a>
+      <a href="composition.html">Composition</a>
+      <a href="photos.html">Photos</a>
+      <a class="active" href="contact.html">Contact</a>
+    </nav>
+    <h1 class="contact-title">CONTACT</h1>
+  </header>
+  <main class="contact-page section-wrap">
+    <form class="contact-form" action="/api/contact" method="post">
+      <div class="contact-form-fields">
+        <label>
+          First Name
+          <input type="text" name="First Name" autocomplete="given-name" required>
+        </label>
+        <label>
+          Second Name
+          <input type="text" name="Second Name" autocomplete="family-name" required>
+        </label>
+        <label class="contact-form-email">
+          Email address
+          <input type="email" name="Email address" autocomplete="email" required>
+        </label>
+        <label class="contact-form-message">
+          Message
+          <textarea name="Message" rows="7" required></textarea>
+        </label>
+      </div>
+      <div class="contact-form-actions">
+        <button class="contact-form-submit" type="submit">Send message</button>
+        <p class="contact-form-status" role="status" aria-live="polite"></p>
+      </div>
+    </form>
+    <div class="photo-credit-frame contact-photo-frame"><img class="contact-portrait" src="optimized-images/contact/Lucien%20Paul%20Stanfield/Thomas%20Kettle%20153-web.webp" alt="Portrait of Thomas Kettle" loading="lazy"></div>
+  </main>
+</body>
+</html>

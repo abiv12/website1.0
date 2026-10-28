@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="description" content="Private diary event editor.">
+  <title>Diary Editor | Thomas Kettle</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="diary-admin.css">
+  <script src="diary-admin.js" defer></script>
+</head>
+<body>
+  <main class="admin-shell">
+    <header class="admin-header">
+      <a class="admin-wordmark" href="index.html">Thomas Kettle <span>/ diary</span></a>
+      <a class="public-link" href="diary.html">View public diary <span aria-hidden="true">↗</span></a>
+    </header>
+
+    <section id="loginPanel" class="login-panel" aria-labelledby="loginTitle" hidden>
+      <p class="eyebrow">Private access</p>
+      <h1 id="loginTitle">Diary editor</h1>
+      <p class="intro">Sign in to add an event to the public diary.</p>
+      <form id="loginForm" class="login-form">
+        <label for="adminPassword">Password</label>
+        <input id="adminPassword" name="password" type="password" autocomplete="current-password" required>
+        <p id="loginError" class="feedback" role="alert" aria-live="polite"></p>
+        <button class="primary-button" type="submit">Sign in</button>
+      </form>
+    </section>
+
+    <section id="editorPanel" class="editor-panel" aria-labelledby="editorTitle" hidden>
+      <div class="editor-heading">
+        <div>
+          <p class="eyebrow">Private access <span class="access-mark" aria-hidden="true"></span></p>
+          <h1 id="editorTitle">Add an event</h1>
+          <p class="intro">New events are added to the diary in date order.</p>
+        </div>
+        <button id="logoutButton" class="quiet-button" type="button" aria-label="Sign out">Sign out <span aria-hidden="true">↗</span></button>
+      </div>
+
+      <section class="import-panel" aria-labelledby="importTitle">
+        <div class="import-heading">
+          <span class="import-index" aria-hidden="true">01</span>
+          <h2 id="importTitle">Use an event link</h2>
+        </div>
+        <form id="importForm" class="import-form">
+          <label class="field" for="importUrl">Event page
+            <input id="importUrl" name="url" type="url" inputmode="url" placeholder="https://venue.org/event" required>
+          </label>
+          <button id="importButton" class="secondary-button" type="submit">Fill from link <span aria-hidden="true">↓</span></button>
+        </form>
+        <p id="importFeedback" class="feedback" role="status" aria-live="polite"></p>
+      </section>
+
+      <form id="eventForm" class="event-form">
+        <div class="form-grid">
+          <label class="field field--wide" for="title">Event title <span class="required">*</span>
+            <input id="title" name="title" type="text" maxlength="180" placeholder="Handel: Messiah" required>
+          </label>
+
+          <label class="field" for="date">Date <span class="required">*</span>
+            <input id="date" name="date" type="date" required>
+          </label>
+          <label class="field" for="time">Start time
+            <input id="time" name="time" type="time">
+          </label>
+
+          <label class="field" for="orchestra">Ensemble
+            <input id="orchestra" name="orchestra" type="text" list="ensembles" maxlength="140" placeholder="La Serenissima">
+            <datalist id="ensembles">
+              <option value="Academy of Ancient Music">
+              <option value="Arcangelo">
+              <option value="Irish Baroque Orchestra">
+              <option value="La Serenissima">
+              <option value="Orchestra of the Age of Enlightenment">
+              <option value="The English Concert">
+            </datalist>
+          </label>
+          <label class="field" for="repertoire">Repertoire
+            <input id="repertoire" name="repertoire" type="text" maxlength="240" placeholder="Handel: Messiah">
+          </label>
+
+          <label class="field field--wide" for="venue">Venue <span class="required">*</span>
+            <input id="venue" name="venue" type="text" maxlength="180" placeholder="Gloucester Cathedral" required>
+          </label>
+
+          <label class="field field--wide" for="eventUrl">Event page link
+            <input id="eventUrl" name="eventUrl" type="url" inputmode="url" maxlength="500" placeholder="https://">
+          </label>
+        </div>
+
+        <div class="form-footer">
+          <label class="publish-control" for="published">
+            <input id="published" name="published" type="checkbox" checked>
+            <span class="switch" aria-hidden="true"></span>
+            <span><strong>Show on public diary</strong><small>Turn off to save this as a draft.</small></span>
+          </label>
+          <button id="saveButton" class="primary-button" type="submit">Add to diary</button>
+        </div>
+        <p id="saveFeedback" class="feedback" role="status" aria-live="polite"></p>
+      </form>
+
+      <section class="recent-section" aria-labelledby="recentTitle">
+        <div class="recent-heading">
+          <h2 id="recentTitle">Recently added</h2>
+          <span id="eventCount" class="event-count"></span>
+        </div>
+        <ol id="recentEvents" class="recent-list"></ol>
+        <p id="recentEmpty" class="recent-empty" hidden>No events to show yet.</p>
+      </section>
+    </section>
+    <p id="pageFeedback" class="page-feedback" role="alert" aria-live="assertive"></p>
+  </main>
+</body>
+</html>

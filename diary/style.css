@@ -1,0 +1,323 @@
+:root {
+  --ink: #1d1c22;
+  --muted: #74717a;
+  --paper: #f7f4ef;
+  --card: #fffdfa;
+  --line: #e4dfd6;
+  --accent: #5d3f7c;
+  --accent-dark: #432c5b;
+  --soft: #eee8f4;
+  --danger: #a83d3d;
+  --shadow: 0 14px 40px rgba(45, 37, 51, .08);
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  color: var(--ink);
+  background: var(--paper);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+button, input, select, textarea { font: inherit; }
+
+.hero {
+  padding: 56px max(24px, calc((100vw - 1050px) / 2));
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 30px;
+  background: linear-gradient(135deg, #efe8f3, #f8f4ec);
+  border-bottom: 1px solid var(--line);
+}
+
+.eyebrow {
+  margin: 0 0 8px;
+  font-size: 11px;
+  letter-spacing: .16em;
+  font-weight: 800;
+  color: var(--accent);
+}
+
+h1, h2, p { margin-top: 0; }
+h1 {
+  margin-bottom: 8px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(42px, 7vw, 72px);
+  font-weight: 500;
+  letter-spacing: -.04em;
+}
+.subtitle { color: var(--muted); margin-bottom: 0; }
+
+.container {
+  width: min(1050px, calc(100% - 40px));
+  margin: 34px auto 80px;
+}
+
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.filters { display: flex; gap: 7px; }
+.filter, .secondary-btn {
+  border: 1px solid var(--line);
+  background: var(--card);
+  color: var(--ink);
+  border-radius: 999px;
+  padding: 9px 15px;
+  cursor: pointer;
+}
+.filter.active { background: var(--ink); color: white; border-color: var(--ink); }
+
+#searchInput {
+  width: 260px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--card);
+  padding: 10px 16px;
+  outline: none;
+}
+#searchInput:focus, input:focus, textarea:focus, select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(93,63,124,.1);
+}
+
+.primary-btn, .danger-btn {
+  border: 0;
+  border-radius: 999px;
+  padding: 12px 18px;
+  cursor: pointer;
+  font-weight: 750;
+}
+.primary-btn { background: var(--accent); color: white; }
+.primary-btn:hover { background: var(--accent-dark); }
+.danger-btn { background: #f7e4e4; color: var(--danger); }
+
+.events-list { display: grid; gap: 13px; }
+
+.event {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  scroll-margin-top: 24px;
+}
+.event.past { opacity: .72; box-shadow: none; }
+
+.event-summary {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  display: grid;
+  grid-template-columns: 86px 1fr auto;
+  align-items: center;
+  text-align: left;
+  gap: 20px;
+  padding: 21px 24px;
+  cursor: pointer;
+}
+.event-summary:hover { background: #fbf8f3; }
+
+.date-box {
+  text-align: center;
+  border-right: 1px solid var(--line);
+  padding-right: 20px;
+}
+.date-day { display: block; font-size: 30px; font-weight: 800; line-height: 1; }
+.date-month { display: block; margin-top: 5px; font-size: 11px; letter-spacing: .12em; font-weight: 800; color: var(--accent); }
+
+.event-title { margin: 0 0 5px; font-family: Georgia, serif; font-size: 24px; font-weight: 500; }
+.event-meta { margin: 0; color: var(--muted); font-size: 14px; }
+.chevron { font-size: 22px; transition: transform .2s; }
+.event.open .chevron { transform: rotate(180deg); }
+
+.event-details {
+  display: block;
+  max-height: 0;
+  padding: 0 24px 0 130px;
+  border-top: 1px solid var(--line);
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height 0.28s ease, opacity 0.18s ease, padding 0.28s ease;
+}
+.event.open .event-details { max-height: 2000px; padding-bottom: 25px; opacity: 1; }
+
+.details-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 15px 30px;
+  padding-top: 21px;
+}
+.detail-label {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 10px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  font-weight: 800;
+  color: var(--muted);
+}
+.detail-value { font-size: 15px; }
+.detail-value a { color: var(--accent); font-weight: 700; }
+.notes { grid-column: 1 / -1; white-space: pre-wrap; line-height: 1.6; }
+
+.detail-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 22px;
+}
+.map-embed { flex: 1 0 100%; aspect-ratio: 16 / 7; min-height: 230px; margin-top: 12px; border: 1px solid var(--line); overflow: hidden; }
+.map-embed iframe { display: block; width: 100%; height: 100%; border: 0; }
+.detail-actions .ensemble-link { position: static; flex: 0 0 72px; width: 72px; height: 72px; aspect-ratio: 1; border-radius: 50%; background-position: center; background-size: cover; }
+.link-btn, .edit-btn {
+  display: inline-block;
+  padding: 9px 13px;
+  border-radius: 999px;
+  text-decoration: none;
+  border: 1px solid var(--line);
+  color: var(--ink);
+  background: white;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 13px;
+}
+.link-btn:hover, .edit-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+.empty {
+  text-align: center;
+  padding: 80px 20px;
+  color: var(--muted);
+}
+.empty-icon { font-size: 44px; color: var(--accent); }
+.hidden { display: none !important; }
+
+dialog {
+  width: min(760px, calc(100% - 28px));
+  border: 0;
+  border-radius: 22px;
+  padding: 0;
+  color: var(--ink);
+  box-shadow: 0 30px 90px rgba(0,0,0,.25);
+}
+dialog::backdrop { background: rgba(25,20,28,.55); backdrop-filter: blur(3px); }
+#eventForm { padding: 28px; }
+.dialog-header { display: flex; justify-content: space-between; align-items: start; margin-bottom: 22px; }
+.dialog-header h2 { margin: 0; font-family: Georgia, serif; font-size: 34px; font-weight: 500; }
+.icon-btn { border: 0; background: transparent; font-size: 28px; cursor: pointer; color: var(--muted); }
+
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+label { display: grid; gap: 7px; font-size: 12px; font-weight: 800; color: #4e4a53; }
+label.full { grid-column: 1 / -1; }
+input, select, textarea {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 11px 12px;
+  background: #fff;
+  color: var(--ink);
+  outline: none;
+}
+textarea { resize: vertical; }
+
+.form-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+}
+.form-actions > div { display: flex; gap: 8px; }
+
+@media (max-width: 700px) {
+  .hero { padding: 38px 20px; display: block; }
+  .hero .primary-btn { margin-top: 25px; }
+  .container { width: min(100% - 24px, 1050px); }
+  .toolbar { display: block; }
+  .filters { margin-bottom: 12px; overflow-x: auto; }
+  #searchInput { width: 100%; }
+  .event-summary { grid-template-columns: 62px 1fr auto; gap: 12px; padding: 17px; }
+  .date-box { padding-right: 12px; }
+  .date-day { font-size: 25px; }
+  .event-title { font-size: 20px; }
+  .event-details { padding: 0 17px 20px 17px; }
+  .details-grid, .form-grid { grid-template-columns: 1fr; }
+  label.full { grid-column: auto; }
+  #eventForm { padding: 20px; }
+}
+
+.music-diary-editor { background: var(--paper); color: var(--ink); font-family: 'Space Grotesk', sans-serif; }
+.music-diary-editor .hero { width: min(1180px, calc(100% - 96px)); margin: 0 auto; padding: 48px 0 34px; background: transparent; border-bottom: 1px solid var(--line); }
+.music-diary-editor .hero .eyebrow { color: var(--muted); margin-bottom: 26px; }
+.music-diary-editor h1, .music-diary-editor h2 { font-family: 'Space Grotesk', sans-serif; font-weight: 600; letter-spacing: -.07em; }
+.music-diary-editor h1 { margin-bottom: 0; font-size: clamp(3rem, 7vw, 6rem); line-height: .98; }
+.music-diary-editor .subtitle { color: var(--muted); }
+.music-diary-editor .primary-btn { border-radius: 0; background: var(--moss); color: var(--paper); }
+.music-diary-editor .primary-btn:hover { background: var(--accent); color: var(--moss); }
+.music-diary-editor .container { width: min(1180px, calc(100% - 96px)); margin: 0 auto; padding: 24px 0 90px; }
+.music-diary-editor .toolbar { margin-bottom: 30px; }
+.music-diary-editor .events-list { width: min(50vw, 720px); margin: 0 auto; }
+.music-diary-editor .filters { gap: 24px; }
+.music-diary-editor .filter, .music-diary-editor #searchInput { border-radius: 0; }
+.music-diary-editor .filter { padding: 9px 0; border-width: 0 0 1px; background: transparent; color: var(--muted); text-transform: uppercase; letter-spacing: .1em; font-size: .72rem; font-weight: 700; }
+.music-diary-editor .filter.active, .music-diary-editor .filter:hover { border-bottom-color: var(--ink); background: transparent; color: var(--ink); }
+.music-diary-editor #searchInput { width: 280px; background: transparent; }
+.music-diary-editor .events-list { gap: 1px; }
+.music-diary-editor .event { border-width: 1px 0; border-radius: 0; box-shadow: none; background: transparent; }
+.music-diary-editor .event + .event { border-top: 0; }
+.music-diary-editor .event-summary { grid-template-columns: 86px 1fr 58px 24px; padding: 18px 0; gap: 16px; text-align: center; }
+.music-diary-editor .event-summary:hover { background: transparent; }
+.music-diary-editor .event-summary > span:nth-child(2) { display: grid; gap: 0; text-align: left; }
+.music-diary-editor .event-summary .chevron { width: 24px; text-align: center; }
+.music-diary-editor .event-summary .ensemble-slot { width: 58px; display: grid; place-items: center; }
+.music-diary-editor .event-summary .ensemble-link { position: static; width: 48px; height: 48px; }
+.music-diary-editor .event-detail-layout { display: block; }
+.music-diary-editor .date-month, .music-diary-editor .detail-label, .music-diary-editor .eyebrow { color: var(--accent-strong); }
+.music-diary-editor .event-title { font-family: 'Space Grotesk', sans-serif; font-size: 1.35rem; font-weight: 600; letter-spacing: -.05em; }
+.music-diary-editor .event-details { padding: 0 0 22px; border-top: 0; text-align: left; }
+.music-diary-editor .event-details { max-height: 0; padding-bottom: 0; opacity: 0; transition: max-height .4s ease, opacity .35s ease, padding .4s ease; }
+.music-diary-editor .event.open .event-details { max-height: 2000px; padding-bottom: 22px; opacity: 1; transition-duration: .8s, .65s, .8s; }
+.music-diary-editor .event-details { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; align-items: stretch; }
+.music-diary-editor .event-detail-layout { grid-column: 2; grid-row: 1; }
+.music-diary-editor .map-embed { grid-column: 1; grid-row: 1; }
+.music-diary-editor .details-grid { gap: 0; }
+.music-diary-editor .detail-value { line-height: 1.2; }
+.music-diary-editor .map-embed { width: 100%; min-height: 100%; margin-top: 0; }
+.music-diary-editor .details-grid .ensemble-event-link { transition: transform .25s ease, color .25s ease; transform-origin: left center; }
+.music-diary-editor .details-grid .ensemble-event-link:hover { transform: scale(1.04); }
+.music-diary-editor .details-grid a.ensemble-event-link { transform: none; transition: color .25s ease; }
+.music-diary-editor .details-grid .date-line { margin-bottom: 16px; }
+.music-diary-editor .details-grid .venue-line { margin-top: 16px; }
+.music-diary-editor .details-grid .venue-line { transition: transform .25s ease; transform-origin: left center; }
+.music-diary-editor .details-grid .venue-line:hover { transform: scale(1.04); }
+.music-diary-editor .details-grid:has(.ensemble-event-link:hover) .ensemble-event-link { color: var(--accent-strong); text-decoration-color: var(--accent-strong); }
+.music-diary-editor .details-grid:has(.ensemble-event-link:hover) > .ensemble-event-link { transform: scale(1.04); }
+.music-diary-editor .event-summary .ensemble-link { transition: transform .25s ease; }
+.music-diary-editor .event:has(.details-grid a.ensemble-event-link:hover) .event-summary .ensemble-link { transform: scale(1.08); }
+.music-diary-editor .map-embed { transition: transform .35s ease; transform-origin: center; }
+.music-diary-editor .event-details:has(.venue-line:hover) .map-embed { transform: scale(1.03); }
+.music-diary-editor .link-btn, .music-diary-editor .edit-btn, .music-diary-editor .secondary-btn, .music-diary-editor .danger-btn { border-radius: 0; }
+.music-diary-editor dialog { border-radius: 0; }
+.music-diary-editor dialog .eyebrow { color: var(--accent-strong); }
+.music-diary-editor .login-error { min-height: 1.4em; margin: 12px 0 0; color: var(--danger); font-size: .8rem; }
+
+@media (max-width: 760px) {
+  .music-diary-editor .hero, .music-diary-editor .container { width: min(100% - 40px, 600px); }
+  .music-diary-editor .hero { display: block; padding: 42px 0 30px; }
+  .music-diary-editor .hero .primary-btn { margin-top: 28px; }
+  .music-diary-editor .container { padding: 22px 0 72px; }
+  .music-diary-editor .events-list { width: 100%; }
+  .music-diary-editor .toolbar { display: block; }
+  .music-diary-editor .filters { margin-bottom: 18px; overflow-x: auto; }
+  .music-diary-editor #searchInput { width: 100%; }
+  .music-diary-editor .event-summary { grid-template-columns: 62px 1fr 48px 24px; padding: 16px 0; gap: 10px; }
+  .music-diary-editor .event-details { padding-left: 0; }
+  .music-diary-editor .event-details { grid-template-columns: 1fr; gap: 14px; }
+  .music-diary-editor .event-detail-layout, .music-diary-editor .map-embed { grid-column: auto; grid-row: auto; }
+}
