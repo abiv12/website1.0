@@ -265,9 +265,14 @@ const albumPreviewData = {
 };
 
 const createAlbumPreview = () => {
-  const dialog = document.createElement('dialog');
+  const overlay = document.createElement('div');
+  overlay.className = 'album-preview-overlay';
+  const dialog = document.createElement('div');
   dialog.className = 'album-preview-dialog';
+  dialog.setAttribute('role', 'dialog');
+  dialog.setAttribute('aria-modal', 'true');
   dialog.setAttribute('aria-labelledby', 'album-preview-title');
+  dialog.tabIndex = -1;
   dialog.innerHTML = `
     <div class="album-preview-panel">
       <button class="album-preview-close" type="button" aria-label="Close album details">×</button>
@@ -277,25 +282,26 @@ const createAlbumPreview = () => {
         <a class="album-preview-ensemble ensemble-link" target="_blank" rel="noreferrer"></a>
       </div>
     </div>`;
-  document.body.appendChild(dialog);
+  overlay.appendChild(dialog);
+  document.body.appendChild(overlay);
 
   const title = dialog.querySelector('.album-preview-title');
   const player = dialog.querySelector('.album-preview-player');
   const ensembleLink = dialog.querySelector('.album-preview-ensemble');
 
   const closePreview = () => {
-    if (dialog.open) dialog.close();
+    overlay.classList.remove('is-open');
+    document.body.classList.remove('album-preview-locked');
     player.replaceChildren();
     ensembleLink.hidden = true;
   };
 
   dialog.querySelector('.album-preview-close').addEventListener('click', closePreview);
-  dialog.addEventListener('click', (event) => {
-    if (event.target === dialog) closePreview();
+  overlay.addEventListener('click', (event) => {
+    if (event.target === overlay) closePreview();
   });
-  dialog.addEventListener('close', () => {
-    player.replaceChildren();
-    ensembleLink.hidden = true;
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && overlay.classList.contains('is-open')) closePreview();
   });
 
   return {
@@ -326,8 +332,8 @@ const createAlbumPreview = () => {
         ensembleLink.hidden = false;
       }
 
-      if (!dialog.open) dialog.showModal();
-      dialog.querySelector('.album-preview-close').focus();
+      overlay.classList.add('is-open');
+      document.body.classList.add('album-preview-locked');
     }
   };
 };
