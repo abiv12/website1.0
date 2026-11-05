@@ -239,7 +239,17 @@ function serveFile(request, response) {
     return;
   }
   const relativePath = requestedPath === '/' ? 'home.html' : requestedPath.replace(/^\/+/, '');
-  const filePath = path.resolve(root, relativePath);
+  let filePath = path.resolve(root, relativePath);
+  if (!path.extname(filePath) && !requestedPath.endsWith('/') && fs.existsSync(path.join(filePath, 'index.html'))) {
+    response.writeHead(301, { Location: `${requestedPath}/` });
+    response.end();
+    return;
+  }
+  const isFile = (candidate) => fs.existsSync(candidate) && fs.statSync(candidate).isFile();
+  if (!isFile(filePath) && !path.extname(filePath)) {
+    const candidates = [`${filePath}.html`, path.join(filePath, 'index.html')];
+    filePath = candidates.find(isFile) || filePath;
+  }
   if (!filePath.startsWith(`${root}${path.sep}`) || !fs.existsSync(filePath) || fs.statSync(filePath).isDirectory()) {
     response.writeHead(404);
     response.end('Not found');

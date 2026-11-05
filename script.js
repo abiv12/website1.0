@@ -6,15 +6,15 @@ if (!document.querySelector('link[rel="icon"]')) {
   const favicon = document.createElement('link');
   favicon.rel = 'icon';
   favicon.type = 'image/webp';
-  favicon.href = `${window.location.pathname.includes('/discography/') || window.location.pathname.includes('/diary/') ? '../' : ''}optimized-images/favicon/20260108150352_IMG_3489-01.webp`;
+  favicon.href = `${/\/(discography|diary|about)\//.test(window.location.pathname) ? '../' : ''}optimized-images/favicon/20260108150352_IMG_3489-01.webp`;
   document.head.appendChild(favicon);
 }
 
 if (!document.querySelector('.site-header')) {
-  const root = window.location.pathname.includes('/discography/') || window.location.pathname.includes('/diary/') ? '../' : '';
+  const root = /\/(discography|diary|about)\//.test(window.location.pathname) ? '../' : '';
   const header = document.createElement('header');
   header.className = 'site-header';
-  header.innerHTML = `<nav class="site-nav" aria-label="Primary navigation"><a href="${root}home.html">Home</a><a href="${root}index.html">About</a><a href="${root}biography.html#videos">Videos</a><a href="${root}diary.html">Diary</a><a href="${root}where.html">Where</a><a href="${root}composition.html">Composition</a><a href="${root}photos.html">Photos</a><a href="${root}contact.html">Contact</a></nav>`;
+  header.innerHTML = `<nav class="site-nav" aria-label="Primary navigation"><a href="${root}home.html">Home</a><a href="${root}about/index.html">About</a><a href="${root}about/index.html#videos">Videos</a><a href="${root}diary.html">Diary</a><a href="${root}where.html">Where</a><a href="${root}composition.html">Composition</a><a href="${root}photos.html">Photos</a><a href="${root}contact.html">Contact</a></nav>`;
   document.body.prepend(header);
 }
 
@@ -156,7 +156,7 @@ const siteFooter = document.querySelector('footer.site-footer');
 if (siteFooter && !siteFooter.querySelector('.footer-image')) {
   const footerImage = document.createElement('img');
   footerImage.className = 'footer-image';
-  footerImage.src = `${window.location.pathname.includes('/discography/') || window.location.pathname.includes('/diary/') ? '../' : ''}optimized-images/footer/Lucien%20Paul%20Stanfield/Footer_1.webp`;
+  footerImage.src = `${/\/(discography|diary|about)\//.test(window.location.pathname) ? '../' : ''}optimized-images/footer/Lucien%20Paul%20Stanfield/Footer_1.webp`;
   footerImage.alt = '';
   siteFooter.appendChild(footerImage);
 }

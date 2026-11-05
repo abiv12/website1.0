@@ -278,7 +278,7 @@ h1 em, h2 em { color: var(--moss); font-style: normal; }
   font: 400 2rem/1 'Space Grotesk', sans-serif;
   cursor: pointer;
 }
-.album-preview-title { flex: 0 0 auto; padding: 0 56px 12px 0; font-size: clamp(2rem, 5vw, 4rem); }
+.album-preview-title { display: none; }
 .album-preview-layout { flex: 1 1 auto; min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr) minmax(120px, 260px); gap: clamp(20px, 4vw, 48px); align-items: center; margin-block: clamp(8px, 1.25vw, 14px); }
 .album-preview-player { min-width: 0; min-height: 0; height: 100%; overflow: hidden; border-radius: 0; background: var(--paper); }
 .album-preview-player .apple-music-player { display: block; width: 100%; height: 100%; min-height: 0; border: 0; border-radius: 0; }
@@ -296,60 +296,23 @@ h1 em, h2 em { color: var(--moss); font-style: normal; }
 .album-preview-art--eleven { background-image: url('optimized-images/discography/album-11_Arias%20for%20Giovanni%20Rubinelli.webp'); }
 .album-preview-dialog:focus-visible { outline: none; }
 @media (min-width: 761px) {
-  .album-preview-dialog {
-    height: max-content;
-    max-height: calc(100dvh - 40px);
-  }
-
-  .album-preview-panel {
-    height: auto;
-    display: block;
-    padding: 0;
-  }
-
-  .album-preview-title {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    overflow: hidden;
-    clip-path: inset(50%);
-    white-space: nowrap;
-  }
-
-  .album-preview-layout {
-    width: 100%;
-    height: min(540px, calc(100dvh - 40px));
-    min-height: 0;
-    flex: 0 0 auto;
-    margin: 0;
-    align-items: center;
-  }
-
-  .album-preview-player { position: relative; height: 100%; align-self: stretch; }
-  .album-preview-player .apple-music-player {
-    position: absolute;
-    top: 0;
-    right: -16px;
-    left: -16px;
-    bottom: -120px;
-    width: calc(100% + 32px);
-    height: calc(100% + 120px);
-    max-width: none;
-  }
+  .album-preview-dialog { height: fit-content; max-height: calc(100dvh - 24px); }
+  .album-preview-panel { height: auto; display: block; padding: 0; }
+  .album-preview-layout { height: min(450px, calc(100dvh - 24px)); margin: 0; }
   .album-preview-ensemble { transform: translateX(calc(0px - clamp(10px, 2vw, 24px))); transform-origin: center; }
   .album-preview-ensemble:hover { transform: translateX(calc(0px - clamp(10px, 2vw, 24px))) scale(1.08); }
 }
 @media (max-width: 760px) {
   .album-preview-dialog {
     width: calc(100vw - 40px);
-    height: min(515px, calc(100dvh - 40px));
+    height: fit-content;
+    max-height: calc(100dvh - 40px);
     border-radius: 8px;
   }
   .album-preview-panel { display: flex; flex-direction: column; padding: 0; }
   .album-preview-close { top: 8px; right: auto; left: calc(50% + 2px); }
   .album-preview-title { display: none; }
-  .album-preview-layout { width: 100%; height: auto; min-height: 0; flex: 1 1 auto; grid-template-columns: minmax(0, 1fr); gap: 0; margin: 0; }
+  .album-preview-layout { width: 100%; height: min(450px, calc(100dvh - 40px)); min-height: 0; flex: 0 0 auto; grid-template-columns: minmax(0, 1fr); gap: 0; margin: 0; }
   .album-preview-player { width: 100%; min-width: 0; height: 100%; }
   .album-preview-player .apple-music-player { width: 100%; height: 100%; max-width: 100%; }
   .album-preview-dialog .album-preview-ensemble { position: absolute; top: 8px; right: auto; left: calc(50% - 46px); display: block; width: 42px; height: 42px; max-width: none; max-height: none; aspect-ratio: 1; z-index: 19; border-radius: 50%; }
@@ -1339,4 +1302,25 @@ body.album-detail > .site-header {
   .album-detail .ensemble-link { display: none; }
 
   .album-detail .album-page-carousel .album { flex-basis: clamp(80px, 14vh, 110px); }
+}
+
+/* Desktop: keep homepage side text inside the empty space beside each photo */
+@media (min-width: 761px) {
+  .hp-panel { --hp-side: calc(100vw - min(72vw, 1100px)); }
+  .hp-about-content { overflow: hidden; }
+  .hp-about-text { font-size: clamp(.62rem, calc(var(--hp-side) * .066), 1.55rem); padding: clamp(6px, calc(var(--hp-side) * .04), 18px) 0; overflow-wrap: anywhere; }
+  .hp-panel--right .hp-diary-list { top: 0; bottom: 0; left: 0; width: calc(var(--hp-side) - 2.5vw); box-sizing: border-box; padding-left: 2.5vw; align-content: center; gap: 0; overflow: hidden; }
+  .hp-panel--right .hp-diary-item { padding: clamp(4px, calc(var(--hp-side) * .02), 14px) 0; overflow-wrap: anywhere; }
+  .hp-panel--right .hp-diary-date { font-size: clamp(.5rem, calc(var(--hp-side) * .032), .8rem); }
+  .hp-panel--right .hp-diary-title { font-size: clamp(.62rem, calc(var(--hp-side) * .042), 1.05rem); }
+  .hp-panel--right .hp-diary-detail { font-size: clamp(.5rem, calc(var(--hp-side) * .034), .85rem); }
+  .hp-panel--right .hp-diary-more { font-size: clamp(.55rem, calc(var(--hp-side) * .038), .95rem); }
+}
+
+/* Narrow layout: scale the About paragraph to fill the panel beside the photo */
+@media (max-width: 760px) {
+  .home-page .hp-about-text,
+  .home-page .hp-about[open] .hp-about-text { font-size: 3.7vw; font-weight: 300; line-height: 1.4; }
+  .home-page .hp-about-content,
+  .home-page .hp-about[open] .hp-about-content { overflow: hidden; padding-top: calc(36px + 7.5vw) !important; }
 }
