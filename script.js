@@ -297,8 +297,9 @@ const createAlbumPreview = () => {
   };
 
   dialog.querySelector('.album-preview-close').addEventListener('click', closePreview);
+  let openedAt = 0;
   overlay.addEventListener('click', (event) => {
-    if (event.target === overlay) closePreview();
+    if (event.target === overlay && Date.now() - openedAt > 400) closePreview();
   });
   document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape' && overlay.classList.contains('is-open')) closePreview();
@@ -322,7 +323,11 @@ const createAlbumPreview = () => {
         const iframe = document.createElement('iframe');
         iframe.className = 'apple-music-player';
         iframe.title = data.playerTitle;
-        iframe.allow = 'autoplay *; encrypted-media *; fullscreen *; clipboard-write';
+        iframe.allow = 'autoplay *; encrypted-media *; clipboard-write';
+        iframe.setAttribute('sandbox', 'allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation');
+        iframe.setAttribute('loading', 'eager');
+        iframe.width = '100%';
+        iframe.height = '450';
         iframe.src = data.playerUrl;
         player.appendChild(iframe);
 
@@ -332,6 +337,7 @@ const createAlbumPreview = () => {
         ensembleLink.hidden = false;
       }
 
+      openedAt = Date.now();
       overlay.classList.add('is-open');
       document.body.classList.add('album-preview-locked');
     }
@@ -351,6 +357,7 @@ document.addEventListener('click', (event) => {
   if (!albumName) return;
 
   event.preventDefault();
+  event.stopPropagation();
   albumPreview.open(albumName);
 });
 

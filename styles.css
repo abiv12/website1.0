@@ -187,10 +187,13 @@ h1 em, h2 em { color: var(--moss); font-style: normal; }
 .carousel-scrubber input::-moz-range-thumb { width: 72px; height: 8px; border: 0; border-radius: 0; background: var(--ink); }
 .album { flex: 0 0 clamp(290px, 31vw, 500px); aspect-ratio: 1; scroll-snap-align: center; background-position: center; background-size: cover; filter: none; position: relative; transition: transform .3s ease; z-index: 0; }
 .album::after { content: ''; position: absolute; inset: 0; background: linear-gradient(145deg, rgba(216, 255, 79, .28), transparent 42%, rgba(16, 19, 18, .22)); mix-blend-mode: screen; }
-.album:hover { transform: scale(1.04); z-index: 1; }
+@media (hover: hover) and (pointer: fine) { .album:hover { transform: scale(1.04); z-index: 1; } }
+@media (hover: none), (pointer: coarse) { .album .recording-logo { display: none; } }
 .album .recording-logo { --album-logo-inset: 24px; position: absolute; top: var(--album-logo-inset); right: var(--album-logo-inset); z-index: 2; width: 72px; height: 72px; pointer-events: auto; opacity: 0; transform: scale(.9); transform-origin: top right; transition: opacity .3s ease, transform .3s ease; }
-.album:hover .recording-logo { width: 50%; height: auto; aspect-ratio: 1 / 1; opacity: 1; transform: none; }
-.album:hover .recording-logo:hover { transform: scale(1.05); }
+@media (hover: hover) and (pointer: fine) {
+  .album:hover .recording-logo { width: 50%; height: auto; aspect-ratio: 1 / 1; opacity: 1; transform: none; }
+  .album:hover .recording-logo:hover { transform: scale(1.05); }
+}
 .album--one { background-image: url('optimized-images/discography/album-01_ALPHA1025_Theodoa-2048x2048.webp'); }
 .album--two { background-image: url('optimized-images/discography/album-02_Behind%20Closed%20Doors.webp'); }
 .album--three { background-image: url('optimized-images/discography/album-03_Schubert-Symphonies-Nos-5-8-cover.webp'); }
@@ -246,8 +249,10 @@ h1 em, h2 em { color: var(--moss); font-style: normal; }
 .album-detail--ten .album-art { background-image: url('optimized-images/discography/album-10_An-Englishman-Abroad.webp'); }
 .album-detail--eleven .album-art { background-image: url('optimized-images/discography/album-11_Arias%20for%20Giovanni%20Rubinelli.webp'); }
 .album-preview-dialog {
+  position: relative;
   --album-preview-side-margin: max(12px, calc(50vw - 550px));
   width: min(1100px, calc(100vw - 24px));
+  height: calc(100vh - var(--album-preview-side-margin));
   height: calc(100dvh - var(--album-preview-side-margin));
   max-width: none;
   max-height: none;
@@ -260,7 +265,7 @@ h1 em, h2 em { color: var(--moss); font-style: normal; }
   background: var(--paper);
   color: var(--ink);
 }
-.album-preview-overlay { position: fixed; top: 0; right: 0; bottom: 0; left: 0; z-index: 10000; display: none; align-items: center; justify-content: center; background: rgba(0, 0, 0, .48); -webkit-overflow-scrolling: touch; }
+.album-preview-overlay { -webkit-tap-highlight-color: transparent; position: fixed; top: 0; right: 0; bottom: 0; left: 0; z-index: 10000; display: none; align-items: center; justify-content: center; background: rgba(0, 0, 0, .48); -webkit-overflow-scrolling: touch; }
 .album-preview-overlay.is-open { display: flex; }
 body.album-preview-locked { overflow: hidden; }
 .album-preview-panel { position: relative; box-sizing: border-box; width: 100%; height: 100%; display: flex; flex-direction: column; padding: clamp(8px, 1.25vw, 14px) clamp(16px, 2.5vw, 28px) 0; overflow: hidden; }
@@ -308,6 +313,7 @@ body.album-preview-locked { overflow: hidden; }
   .album-preview-dialog {
     width: calc(100vw - 40px);
     height: fit-content;
+    max-height: calc(100vh - 40px);
     max-height: calc(100dvh - 40px);
     border-radius: 8px;
   }
