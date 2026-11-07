@@ -15,6 +15,8 @@ and discography pages and confirm their images load.
 You can also open `index.html` directly in a browser to preview the static
 pages and navigate between them. The contact and diary API features still
 require a separately running Node backend.
+Embedded YouTube playback should be checked on the HTTPS site (or a local HTTP
+server): a `file://` page may not send the HTTP Referer YouTube requires.
 
 ## Node server and API features
 
@@ -27,14 +29,34 @@ For local Node-server testing, install dependencies with `npm install` and run
 
 ## Analytics and consent
 
-The shared `analytics.js` loads Google Tag Manager container `GTM-WVZQWFXB`
-only after a visitor accepts analytics. Visitors can change their choice using
-**Analytics preferences**. Consent Mode defaults analytics storage, ad storage,
-ad user data and ad personalization to denied; accepting grants only analytics
-storage. Revoking consent clears GA cookies and reloads the page without GTM.
-There is deliberately no GTM noscript iframe: it would contact Google even when
-JavaScript and the consent controls are unavailable. Existing saved analytics
-choices continue to apply to the GTM-based analytics implementation.
+The consent interface is temporarily disabled with `consentEnabled = false` in
+`analytics.js`. While disabled, no GTM or analytics tracking is loaded, even
+when earlier preferences were saved. External media and maps load without the
+consent interface. Their providers may use cookies or tracking, so review this
+choice against applicable privacy requirements.
+Set the flag to `true` to make the non-blocking Cookie settings control
+available; the panel opens only when the visitor chooses it.
+
+When enabled, the shared `analytics.js` loads Google Tag Manager container
+`GTM-WVZQWFXB` only after a visitor accepts analytics via **Cookie settings**.
+Consent Mode defaults analytics storage, ad storage, ad user data and ad
+personalization to denied; accepting analytics grants only analytics storage.
+Revoking analytics consent clears first-party GA cookies and reloads without
+GTM. Embedded YouTube, Google Maps, SoundCloud and Apple Music content is not
+controlled by analytics consent. YouTube uses the privacy-enhanced embed domain;
+it can still process data or use storage, especially during playback. Third-party
+cookies cannot be deleted by this site; refer visitors to their browser controls.
+There is deliberately no GTM noscript iframe: it would contact Google
+even when JavaScript and the consent controls are unavailable.
+
+Preferences are stored for 180 days in first-party local storage as `cookie-consent-v3`;
+after expiry analytics remains disabled until a new choice is made.
+Earlier choices are not reused because the notice and categories have changed.
+When storage is unavailable, the settings panel warns that a choice cannot
+persist. A separate, reviewed privacy and cookie notice should document the
+controller, providers, individual cookies, retention and international
+transfers. The site's Google Fonts requests and any GTM tags also require review.
+This implementation alone cannot establish legal compliance.
 
 To connect GA4, in GTM create one **Google tag**, enter the actual GA4 web
 stream measurement ID (`G-...`), select the **Initialization - All Pages**
@@ -62,9 +84,8 @@ fresh browser session, declining should prevent GTM requests; after accepting,
 revoking should reload the page without GTM. The external container and GA4
 property must be configured before Preview can verify events. Publish the
 container after testing; then check the live version as well.
-Other embedded services such as maps and music players have their own privacy
-behavior and are not controlled by this analytics choice. Review the consent
-wording and any privacy notice against the laws applicable to the site.
+Review the consent wording and any privacy notice against the laws applicable
+to the site, and re-audit the container and third-party embeds when they change.
 
 ## Search and deployment
 

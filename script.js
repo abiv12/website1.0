@@ -436,7 +436,7 @@ if (videoPlayer && videoTitle && videoCredit && videoCreditLabel && videoMeta) {
       const { videoId, videoTitle: title, videoSubtitle: subtitle, videoCredit: credit, videoLogo: logoClass } = option.dataset;
       if (!videoId || !title) return;
 
-      videoPlayer.src = `https://www.youtube.com/embed/${encodeURIComponent(videoId)}?rel=0`;
+      videoPlayer.src = `https://www.youtube-nocookie.com/embed/${encodeURIComponent(videoId)}?rel=0`;
       videoPlayer.title = [title.replaceAll(' || ', ' - '), subtitle].filter(Boolean).join(' - ');
       if (subtitle) {
         const mainTitle = document.createElement('span');
