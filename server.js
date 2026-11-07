@@ -238,8 +238,9 @@ function serveFile(request, response) {
     response.end('Not found');
     return;
   }
-  const relativePath = requestedPath === '/' ? 'home.html' : requestedPath.replace(/^\/+/, '');
+  const relativePath = requestedPath === '/' ? 'index.html' : requestedPath.replace(/^\/+/, '');
   let filePath = path.resolve(root, relativePath);
+  if (requestedPath !== '/' && requestedPath.endsWith('/')) filePath = path.join(filePath, 'index.html');
   if (!path.extname(filePath) && !requestedPath.endsWith('/') && fs.existsSync(path.join(filePath, 'index.html'))) {
     response.writeHead(301, { Location: `${requestedPath}/` });
     response.end();
@@ -255,7 +256,7 @@ function serveFile(request, response) {
     response.end('Not found');
     return;
   }
-  const types = { '.html': 'text/html', '.css': 'text/css', '.js': 'text/javascript', '.json': 'application/json', '.jpeg': 'image/jpeg', '.jpg': 'image/jpeg', '.png': 'image/png', '.webp': 'image/webp' };
+  const types = { '.html': 'text/html', '.css': 'text/css', '.js': 'text/javascript', '.json': 'application/json', '.xml': 'application/xml', '.txt': 'text/plain', '.jpeg': 'image/jpeg', '.jpg': 'image/jpeg', '.png': 'image/png', '.webp': 'image/webp' };
   response.writeHead(200, { 'Content-Type': types[path.extname(filePath)] || 'application/octet-stream' });
   fs.createReadStream(filePath).pipe(response);
 }

@@ -1,7 +1,9 @@
 {
   "private": true,
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "sitemap": "node scripts/generate-sitemap.js",
+    "test": "node --test tests/*.test.js"
   },
   "engines": {
     "node": ">=20"

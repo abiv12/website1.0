@@ -14,7 +14,7 @@ if (!document.querySelector('.site-header')) {
   const root = /\/(discography|diary|about)\//.test(window.location.pathname) ? '../' : '';
   const header = document.createElement('header');
   header.className = 'site-header';
-  header.innerHTML = `<nav class="site-nav" aria-label="Primary navigation"><a href="${root}home.html">Home</a><a href="${root}about/index.html">About</a><a href="${root}about/index.html#videos">Videos</a><a href="${root}diary.html">Diary</a><a href="${root}where.html">Where</a><a href="${root}composition.html">Composition</a><a href="${root}photos.html">Photos</a><a href="${root}contact.html">Contact</a></nav>`;
+  header.innerHTML = `<nav class="site-nav" aria-label="Primary navigation"><a href="/">Home</a><a href="${root}about/">About</a><a href="${root}about/#videos">Videos</a><a href="${root}diary.html">Diary</a><a href="${root}where.html">Where</a><a href="${root}composition.html">Composition</a><a href="${root}photos.html">Photos</a><a href="${root}contact.html">Contact</a></nav>`;
   document.body.prepend(header);
 }
 
