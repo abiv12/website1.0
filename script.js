@@ -162,7 +162,7 @@ if (siteHeader && !siteHeader.querySelector('.mobile-menu-toggle')) {
 if (!document.querySelector('footer.site-footer')) {
   const footer = document.createElement('footer');
   footer.className = 'site-footer section-wrap';
-  footer.innerHTML = '<span>© Thomas Kettle 2026<br>Photos by Lucien Paul Stanfield unless stated</span>';
+  footer.innerHTML = '<span>© Thomas Kettle 2026<br>Photos by Lucien Paul Stanfield unless stated otherwise</span>';
   document.body.appendChild(footer);
 }
 

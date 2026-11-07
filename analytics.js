@@ -1,6 +1,5 @@
 (() => {
   const containerId = 'GTM-WVZQWFXB';
-  const consentEnabled = false;
   const consentKey = 'cookie-consent-v3';
   const consentLifetime = 180 * 24 * 60 * 60 * 1000;
   const denied = { analytics: false };
@@ -15,8 +14,6 @@
     ad_user_data: 'denied',
     ad_personalization: 'denied'
   });
-
-  if (!consentEnabled) return;
 
   try {
     const stored = JSON.parse(localStorage.getItem(consentKey));
@@ -55,39 +52,51 @@
 
   const panel = document.createElement('section');
   panel.className = 'analytics-consent';
+  panel.id = 'cookie-preferences';
   panel.setAttribute('aria-label', 'Cookie preferences');
   panel.innerHTML = `
     <h2>Cookie preferences</h2>
-    <p>We use necessary storage to remember your preferences and keep the website working. With your permission, Google Analytics helps us understand visits. External media from YouTube, Google Maps, SoundCloud and Apple Music loads independently and may use cookies and receive your IP address.</p>
-    <p>You can accept, reject or choose optional services, and change your choice at any time using Cookie settings.</p>
+    <p>Necessary storage remembers your choice. With your consent, Google Analytics measures visits. YouTube, Google Maps, SoundCloud and Apple Music load independently and may use cookies and receive your IP address.</p>
     <div class="cookie-actions">
       <button type="button" data-action="accept">Accept analytics</button>
       <button type="button" data-action="reject">Reject analytics</button>
-      <button type="button" data-action="manage" aria-expanded="false">Manage cookie preferences</button>
-    </div>
-    <div class="cookie-options" hidden>
-      <p><strong>Necessary</strong> — always active</p>
-      <label><input type="checkbox" name="analytics"> Analytics (Google Analytics via Google Tag Manager)</label>
-      <button type="button" data-action="save">Save preferences</button>
     </div>
     <p class="cookie-error" role="alert" hidden></p>`;
   panel.hidden = true;
-  const options = panel.querySelector('.cookie-options');
-  const analyticsInput = panel.querySelector('input[name="analytics"]');
   const errorMessage = panel.querySelector('.cookie-error');
   const settings = document.createElement('button');
   settings.type = 'button';
   settings.className = 'analytics-settings';
-  settings.textContent = 'Cookie settings';
-  settings.addEventListener('click', openSettings);
-  document.body.append(panel, settings);
+  settings.textContent = 'Cookies';
+  settings.setAttribute('aria-controls', panel.id);
+  settings.setAttribute('aria-expanded', 'false');
+  settings.addEventListener('click', () => {
+    if (panel.hidden) {
+      openSettings();
+    } else {
+      closeSettings();
+    }
+  });
+  let footer = document.querySelector('footer.site-footer');
+  if (!footer) {
+    footer = document.createElement('footer');
+    footer.className = 'cookie-footer';
+    document.body.appendChild(footer);
+  }
+  const container = document.createElement('div');
+  container.className = 'cookie-footer-controls';
+  container.append(settings, panel);
+  footer.insertBefore(container, footer.firstChild);
+
+  function closeSettings() {
+    panel.hidden = true;
+    settings.setAttribute('aria-expanded', 'false');
+  }
 
   function openSettings() {
-    analyticsInput.checked = preferences.analytics;
-    options.hidden = false;
-    panel.querySelector('[data-action="manage"]').setAttribute('aria-expanded', 'true');
     panel.hidden = false;
-    analyticsInput.focus();
+    settings.setAttribute('aria-expanded', 'true');
+    panel.querySelector('[data-action="accept"]').focus();
   }
 
   function saveChoice(next) {
@@ -115,15 +124,13 @@
     if (reload && !persisted) {
       errorMessage.textContent = 'Your choice could not be saved. Close this page and block analytics cookies in your browser.';
     }
-    if (persisted) panel.hidden = true;
+    if (persisted) closeSettings();
   }
 
   panel.addEventListener('click', (event) => {
     const action = event.target.closest('button[data-action]')?.dataset.action;
     if (action === 'accept') saveChoice({ analytics: true });
     if (action === 'reject') saveChoice({ ...denied });
-    if (action === 'manage') openSettings();
-    if (action === 'save') saveChoice({ analytics: analyticsInput.checked });
   });
   window.addEventListener('storage', (event) => {
     if (event.key === consentKey) location.reload();

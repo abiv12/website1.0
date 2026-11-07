@@ -29,16 +29,13 @@ For local Node-server testing, install dependencies with `npm install` and run
 
 ## Analytics and consent
 
-The consent interface is temporarily disabled with `consentEnabled = false` in
-`analytics.js`. While disabled, no GTM or analytics tracking is loaded, even
-when earlier preferences were saved. External media and maps load without the
-consent interface. Their providers may use cookies or tracking, so review this
-choice against applicable privacy requirements.
-Set the flag to `true` to make the non-blocking Cookie settings control
-available; the panel opens only when the visitor chooses it.
+The **Cookies** control in the footer opens analytics preferences inline; no
+banner appears on arrival. GTM does not load without an explicit analytics
+choice. External media and maps load independently; their providers may use
+cookies or tracking, so review this choice against applicable privacy requirements.
 
 When enabled, the shared `analytics.js` loads Google Tag Manager container
-`GTM-WVZQWFXB` only after a visitor accepts analytics via **Cookie settings**.
+`GTM-WVZQWFXB` only after a visitor accepts analytics via **Cookies** in the footer.
 Consent Mode defaults analytics storage, ad storage, ad user data and ad
 personalization to denied; accepting analytics grants only analytics storage.
 Revoking analytics consent clears first-party GA cookies and reloads without

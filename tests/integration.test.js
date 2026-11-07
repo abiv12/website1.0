@@ -8,9 +8,8 @@ const { spawnSync } = require('node:child_process');
 
 const root = path.resolve(__dirname, '..');
 
-function analyticsPage(choice, frames = [], enabled = true) {
-  const source = fs.readFileSync(path.join(root, 'analytics.js'), 'utf8')
-    .replace('const consentEnabled = false;', `const consentEnabled = ${enabled};`);
+function analyticsPage(choice) {
+  const source = fs.readFileSync(path.join(root, 'analytics.js'), 'utf8');
   const scripts = [];
   const elements = [];
   const storage = new Map(choice ? [['cookie-consent-v3', JSON.stringify({ version: 1, savedAt: Date.now(), ...choice })]] : []);
@@ -23,6 +22,9 @@ function analyticsPage(choice, frames = [], enabled = true) {
       checked: false,
       dataset: {},
       setAttribute() {},
+      append(...items) { elements.push(...items); },
+      appendChild(item) { elements.push(item); },
+      insertBefore(item) { elements.push(item); },
       addEventListener(name, callback) { this.listeners[name] = callback; },
       querySelector(key) {
         const id = `${selector}:${key}`;
@@ -37,9 +39,9 @@ function analyticsPage(choice, frames = [], enabled = true) {
     baseURI: 'https://thomaskettle.com/',
     cookie: '',
     createElement: (tag) => element(tag),
-    querySelectorAll: () => frames,
+    querySelector: () => element('footer'),
     head: { appendChild(tag) { scripts.push(tag); } },
-    body: { append(...children) { elements.push(...children); } }
+    body: { appendChild() {} }
   };
   const window = { addEventListener() {} };
   vm.runInNewContext(source, {
@@ -50,20 +52,13 @@ function analyticsPage(choice, frames = [], enabled = true) {
   return { window, scripts, elements, storage, reloads: () => reloads };
 }
 
-test('disabled consent interface blocks GTM even when preferences were previously granted', () => {
-  const page = analyticsPage({ analytics: true, embeds: true }, [], false);
-  assert.equal(page.scripts.length, 0);
-  assert.equal(page.elements.length, 0);
-  assert.equal(page.window.dataLayer[0][2].analytics_storage, 'denied');
-});
-
 test('GTM requires explicit analytics consent', () => {
   const page = analyticsPage();
   assert.equal(page.scripts.length, 0);
-  assert.equal(page.elements[0].hidden, true);
+  assert.equal(page.elements[1].hidden, true);
   assert.equal(page.window.dataLayer[0][0], 'consent');
   assert.equal(page.window.dataLayer[0][2].analytics_storage, 'denied');
-  page.elements[0].listeners.click({ target: { closest: () => ({ dataset: { action: 'reject' } }) } });
+  page.elements[1].listeners.click({ target: { closest: () => ({ dataset: { action: 'reject' } }) } });
   assert.equal(page.scripts.length, 0);
   assert.equal(JSON.parse(page.storage.get('cookie-consent-v3')).analytics, false);
 });
@@ -75,7 +70,7 @@ test('accepted analytics loads one GTM container and can be revoked', () => {
   assert.equal(page.window.dataLayer.filter((item) => item.event === 'gtm.js').length, 1);
   assert.equal(page.window.dataLayer.filter((item) => item[0] === 'config').length, 0);
   assert.equal(page.window.dataLayer[1][2].analytics_storage, 'granted');
-  page.elements[0].listeners.click({ target: { closest: () => ({ dataset: { action: 'reject' } }) } });
+  page.elements[1].listeners.click({ target: { closest: () => ({ dataset: { action: 'reject' } }) } });
   assert.equal(page.window.dataLayer.at(-1)[2].analytics_storage, 'denied');
   assert.equal(JSON.parse(page.storage.get('cookie-consent-v3')).analytics, false);
   assert.equal(page.reloads(), 1);
@@ -85,27 +80,35 @@ test('accepted analytics loads one GTM container and can be revoked', () => {
 
 test('accepting after a refusal starts GTM exactly once', () => {
   const page = analyticsPage({ analytics: false, embeds: false });
-  page.elements[0].listeners.click({ target: { closest: () => ({ dataset: { action: 'accept' } }) } });
-  page.elements[0].listeners.click({ target: { closest: () => ({ dataset: { action: 'accept' } }) } });
+  page.elements[1].listeners.click({ target: { closest: () => ({ dataset: { action: 'accept' } }) } });
+  page.elements[1].listeners.click({ target: { closest: () => ({ dataset: { action: 'accept' } }) } });
   assert.equal(page.scripts.length, 1);
   assert.equal(page.window.dataLayer.filter((item) => item.event === 'gtm.js').length, 1);
 });
 
-test('preferences enable analytics only after explicit choice', () => {
+test('footer preferences open without granting analytics and save an explicit choice', () => {
   const page = analyticsPage();
-  const panel = page.elements[0];
-  panel.querySelector('input[name="analytics"]').checked = true;
-  panel.listeners.click({ target: { closest: () => ({ dataset: { action: 'save' } }) } });
+  const settings = page.elements[0];
+  const panel = page.elements[1];
+  settings.listeners.click();
+  assert.equal(panel.hidden, false);
+  assert.equal(page.scripts.length, 0);
+  panel.listeners.click({ target: { closest: () => ({ dataset: { action: 'accept' } }) } });
   const choice = JSON.parse(page.storage.get('cookie-consent-v3'));
   assert.equal(choice.version, 1);
   assert.equal(choice.analytics, true);
   assert.ok(Number.isFinite(choice.savedAt));
   assert.equal(page.scripts.length, 1);
+  assert.equal(panel.hidden, true);
+  settings.listeners.click();
+  assert.equal(panel.hidden, false);
+  settings.listeners.click();
+  assert.equal(panel.hidden, true);
 });
 
 test('expired preferences require a fresh choice', () => {
   const page = analyticsPage({ analytics: true, embeds: true, savedAt: Date.now() - 181 * 86400000 });
-  assert.equal(page.elements[0].hidden, true);
+  assert.equal(page.elements[1].hidden, true);
   assert.equal(page.scripts.length, 0);
 });
 
