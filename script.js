@@ -14,8 +14,23 @@ if (!document.querySelector('.site-header')) {
   const root = /\/(discography|diary|about)\//.test(window.location.pathname) ? '../' : '';
   const header = document.createElement('header');
   header.className = 'site-header';
-  header.innerHTML = `<nav class="site-nav" aria-label="Primary navigation"><a href="/">Home</a><a href="${root}about/">About</a><a href="${root}about/#videos">Videos</a><a href="${root}diary.html">Diary</a><a href="${root}where.html">Where</a><a href="${root}composition.html">Composition</a><a href="${root}photos.html">Photos</a><a href="${root}contact.html">Contact</a></nav>`;
+  const filePreview = window.location.protocol === 'file:';
+  const home = filePreview ? `${root}index.html` : '/';
+  const about = filePreview ? `${root}about/index.html` : `${root}about/`;
+  header.innerHTML = `<nav class="site-nav" aria-label="Primary navigation"><a href="${home}">Home</a><a href="${about}">About</a><a href="${about}#videos">Videos</a><a href="${root}diary.html">Diary</a><a href="${root}where.html">Where</a><a href="${root}composition.html">Composition</a><a href="${root}photos.html">Photos</a><a href="${root}contact.html">Contact</a></nav>`;
   document.body.prepend(header);
+}
+
+if (window.location.protocol === 'file:') {
+  const nested = /\/(discography|diary|about)\//.test(window.location.pathname);
+  document.querySelectorAll('a[href="/"], a[href="./"], a[href="about/"], a[href="about/#videos"]').forEach((link) => {
+    const href = link.getAttribute('href');
+    if (href === '/' || href === './') {
+      link.href = nested && href === './' ? 'index.html' : `${nested ? '../' : ''}index.html`;
+    } else {
+      link.href = href.replace('about/', 'about/index.html');
+    }
+  });
 }
 
 const siteHeader = document.querySelector('.site-header');

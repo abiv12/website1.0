@@ -8,12 +8,12 @@ const { spawnSync } = require('node:child_process');
 
 const root = path.resolve(__dirname, '..');
 
-function analyticsPage(choice, configured = true) {
-  const source = fs.readFileSync(path.join(root, 'analytics.js'), 'utf8')
-    .replace("const measurementId = 'G-XXXXXXXXXX';", `const measurementId = '${configured ? 'G-ABC1234567' : 'G-XXXXXXXXXX'}';`);
+function analyticsPage(choice) {
+  const source = fs.readFileSync(path.join(root, 'analytics.js'), 'utf8');
   const scripts = [];
   const elements = [];
   const storage = new Map(choice ? [['analytics-consent', choice]] : []);
+  let reloads = 0;
   function element() {
     return {
       listeners: {},
@@ -31,17 +31,14 @@ function analyticsPage(choice, configured = true) {
   };
   const window = {};
   vm.runInNewContext(source, {
-    window, document, console,
-    location: { origin: 'https://thomaskettle.com', pathname: '/about/', hostname: 'thomaskettle.com' },
+    window, document, console, alert() {},
+    location: { hostname: 'thomaskettle.com', reload() { reloads += 1; } },
     localStorage: { getItem: (key) => storage.get(key), setItem: (key, value) => storage.set(key, value) }
   });
-  return { window, scripts, elements, storage };
+  return { window, scripts, elements, storage, reloads: () => reloads };
 }
 
-test('analytics requires a configured ID and explicit consent', () => {
-  const unconfigured = analyticsPage(null, false);
-  assert.equal(unconfigured.scripts.length, 0);
-  assert.equal(unconfigured.elements.length, 0);
+test('GTM requires explicit analytics consent', () => {
   const page = analyticsPage();
   assert.equal(page.scripts.length, 0);
   assert.equal(page.elements[0].hidden, false);
@@ -52,19 +49,41 @@ test('analytics requires a configured ID and explicit consent', () => {
   assert.equal(page.storage.get('analytics-consent'), 'denied');
 });
 
-test('accepted analytics sends one page view and can be revoked', () => {
+test('accepted analytics loads one GTM container and can be revoked', () => {
   const page = analyticsPage('granted');
   assert.equal(page.scripts.length, 1);
-  const configs = page.window.dataLayer.filter((item) => item[0] === 'config');
-  assert.equal(configs.length, 1);
-  assert.equal(configs[0][2].page_location, 'https://thomaskettle.com/about/');
-  assert.equal(configs[0][2].page_title, 'Example page');
+  assert.equal(page.scripts[0].src, 'https://www.googletagmanager.com/gtm.js?id=GTM-WVZQWFXB');
+  assert.equal(page.window.dataLayer.filter((item) => item.event === 'gtm.js').length, 1);
+  assert.equal(page.window.dataLayer.filter((item) => item[0] === 'config').length, 0);
+  assert.equal(page.window.dataLayer[1][2].analytics_storage, 'granted');
   page.elements[0].listeners.click({ target: { closest: () => ({ dataset: { choice: 'denied' } }) } });
-  assert.equal(page.window['ga-disable-G-ABC1234567'], true);
   assert.equal(page.window.dataLayer.at(-1)[2].analytics_storage, 'denied');
+  assert.equal(page.storage.get('analytics-consent'), 'denied');
+  assert.equal(page.reloads(), 1);
+  const nextPage = analyticsPage('denied');
+  assert.equal(nextPage.scripts.length, 0);
+});
+
+test('accepting after a refusal starts GTM exactly once', () => {
+  const page = analyticsPage('denied');
+  page.elements[0].listeners.click({ target: { closest: () => ({ dataset: { choice: 'granted' } }) } });
   page.elements[0].listeners.click({ target: { closest: () => ({ dataset: { choice: 'granted' } }) } });
   assert.equal(page.scripts.length, 1);
-  assert.equal(page.window.dataLayer.filter((item) => item[0] === 'config').length, 1);
+  assert.equal(page.window.dataLayer.filter((item) => item.event === 'gtm.js').length, 1);
+});
+
+test('all 17 public pages load the shared consent-first integration once', () => {
+  const pages = ['index.html', 'about/index.html', 'composition.html', 'contact.html',
+    'diary.html', ...Array.from({ length: 10 }, (_, i) => `discography/album-${String(i + 1).padStart(2, '0')}.html`),
+    'photos.html', 'where.html'];
+  assert.equal(pages.length, 17);
+  for (const file of pages) {
+    const html = fs.readFileSync(path.join(root, file), 'utf8');
+    const asset = path.relative(path.dirname(path.join(root, file)), path.join(root, 'analytics.js')).split(path.sep).join('/');
+    assert.ok(html.includes(`src="${asset}"`), file);
+    assert.equal((html.match(/<script\b[^>]*src=["'][^"']*analytics\.js["']/gi) || []).length, 1, file);
+    assert.doesNotMatch(html, /googletagmanager\.com\/(?:gtm\.js|gtag\/js|ns\.html)/i, file);
+  }
 });
 
 test('build includes new indexable pages, excludes private pages and requires metadata', (t) => {
@@ -83,7 +102,7 @@ test('build includes new indexable pages, excludes private pages and requires me
   const run = (script) => spawnSync(process.execPath, [path.join(dir, 'scripts', script)], { encoding: 'utf8' });
   assert.equal(run('prepare-analytics.js').status, 0);
   const prepared = fs.readFileSync(path.join(dir, 'new', 'page.html'), 'utf8');
-  assert.match(prepared, /src="\/analytics\.js"/);
+  assert.match(prepared, /src="\.\.\/analytics\.js"/);
   assert.equal(run('prepare-analytics.js').status, 0);
   assert.equal(fs.readFileSync(path.join(dir, 'new', 'page.html'), 'utf8'), prepared);
   assert.equal(run('generate-sitemap.js').status, 0);

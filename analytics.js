@@ -1,9 +1,6 @@
 (() => {
-  const measurementId = 'G-XXXXXXXXXX';
+  const containerId = 'GTM-WVZQWFXB';
   const consentKey = 'analytics-consent';
-
-  // Do not load Google or show a consent prompt until a real ID is configured.
-  if (!/^G-[A-Z0-9]+$/.test(measurementId) || measurementId === 'G-XXXXXXXXXX') return;
 
   window.dataLayer = window.dataLayer || [];
   function gtag() { window.dataLayer.push(arguments); }
@@ -25,19 +22,12 @@
   function startAnalytics() {
     if (started) return;
     started = true;
-    window[`ga-disable-${measurementId}`] = false;
     gtag('consent', 'update', { analytics_storage: 'granted' });
-    gtag('js', new Date());
-    gtag('config', measurementId, {
-      page_location: location.origin + location.pathname,
-      page_title: document.title,
-      allow_google_signals: false,
-      allow_ad_personalization_signals: false
-    });
+    window.dataLayer.push({ 'gtm.start': Date.now(), event: 'gtm.js' });
     const tag = document.createElement('script');
     tag.async = true;
-    tag.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(measurementId)}`;
-    tag.addEventListener('error', () => console.error('Google Analytics could not be loaded.'));
+    tag.src = `https://www.googletagmanager.com/gtm.js?id=${encodeURIComponent(containerId)}`;
+    tag.addEventListener('error', () => console.error('Google Tag Manager could not be loaded.'));
     document.head.appendChild(tag);
   }
 
@@ -59,18 +49,27 @@
       localStorage.setItem(consentKey, value);
     } catch (error) {
       console.warn('Analytics consent could not be saved; this choice applies only to this page.', error);
+      if (value === 'denied') {
+        removeAnalyticsCookies();
+        gtag('consent', 'update', { analytics_storage: 'denied' });
+        panel.hidden = true;
+        alert('Your choice could not be saved. Please block analytics cookies in your browser and close this page.');
+        return;
+      }
     }
     if (value === 'granted') {
       if (started) {
-        window[`ga-disable-${measurementId}`] = false;
         gtag('consent', 'update', { analytics_storage: 'granted' });
       } else {
         startAnalytics();
       }
     } else {
       gtag('consent', 'update', { analytics_storage: 'denied' });
-      window[`ga-disable-${measurementId}`] = true;
       removeAnalyticsCookies();
+      if (started) {
+        location.reload();
+        return;
+      }
     }
     panel.hidden = true;
   }

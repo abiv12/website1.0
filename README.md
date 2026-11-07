@@ -12,6 +12,10 @@ Then open <http://localhost:8000/>. The root `index.html` is the GitHub Pages
 entry point. To test the site before publishing, also check the Photos, About,
 and discography pages and confirm their images load.
 
+You can also open `index.html` directly in a browser to preview the static
+pages and navigate between them. The contact and diary API features still
+require a separately running Node backend.
+
 ## Node server and API features
 
 GitHub Pages serves static files only. Contact submissions and diary
@@ -23,24 +27,44 @@ For local Node-server testing, install dependencies with `npm install` and run
 
 ## Analytics and consent
 
-Replace `G-XXXXXXXXXX` in `analytics.js` with the GA4 web stream's measurement
-ID. The placeholder disables the consent prompt and does not send data. Once
-configured, visitors can accept or decline analytics and change their choice
-using **Analytics preferences**. The Google tag loads only after acceptance;
-Consent Mode defaults analytics and advertising storage, ad user data and ad
-personalization to denied. Advertising consent is never granted by this prompt.
-GA4 receives the page title and path without query strings or fragments. The
-site uses normal document navigation, so GA4 sends one automatic page view per
-loaded document; no additional history-based page-view handler is needed.
-If client-side routing is added, implement one page-view mechanism for route
-changes and ensure GA4 enhanced measurement does not duplicate it.
+The shared `analytics.js` loads Google Tag Manager container `GTM-WVZQWFXB`
+only after a visitor accepts analytics. Visitors can change their choice using
+**Analytics preferences**. Consent Mode defaults analytics storage, ad storage,
+ad user data and ad personalization to denied; accepting grants only analytics
+storage. Revoking consent clears GA cookies and reloads the page without GTM.
+There is deliberately no GTM noscript iframe: it would contact Google even when
+JavaScript and the consent controls are unavailable. Existing saved analytics
+choices continue to apply to the GTM-based analytics implementation.
 
-The previous Google Tag Manager snippet on `home.html` was removed to prevent
-unconsented or duplicate tags. If that container provided other functionality,
-review it separately before restoring any tags. Other embedded services such as
-maps and music players have their own privacy behavior and are not controlled by
-this analytics choice. Review the consent wording and any privacy notice against
-the laws applicable to the site.
+To connect GA4, in GTM create one **Google tag**, enter the actual GA4 web
+stream measurement ID (`G-...`), select the **Initialization - All Pages**
+trigger and publish the container. The Google tag sends its initial page view
+automatically; do not add a separate `page_view` tag or a second Google tag for
+the same property. The site uses normal document navigation, not a client-side
+router. If a router is added, configure one route-change page-view mechanism
+and check GA4 enhanced measurement does not duplicate it.
+
+The consent notice covers analytics only. Use this container for analytics tags
+only, ensure each tag respects `analytics_storage`, and do not add advertising
+or other non-analytics tags without separate consent and appropriate controls.
+Keep Google signals and ad personalization disabled for this analytics-only
+setup. In the Google tag configuration, set `page_location` to the current
+origin and pathname without the query string or fragment if URLs can contain
+personal or sensitive data: create a GTM **Custom JavaScript** variable with
+`function() { return location.origin + location.pathname; }`, then add a
+configuration parameter named `page_location` with that variable as its value.
+Audit other automatic events and GA4 settings for personal data too.
+
+To test, open GTM **Preview** (Tag Assistant), connect to the site, and accept
+analytics. Check that the Google tag fires once on each
+page and use GA4 DebugView to check for one `page_view` per navigation. In a
+fresh browser session, declining should prevent GTM requests; after accepting,
+revoking should reload the page without GTM. The external container and GA4
+property must be configured before Preview can verify events. Publish the
+container after testing; then check the live version as well.
+Other embedded services such as maps and music players have their own privacy
+behavior and are not controlled by this analytics choice. Review the consent
+wording and any privacy notice against the laws applicable to the site.
 
 ## Search and deployment
 

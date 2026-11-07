@@ -13,9 +13,11 @@ function visit(directory) {
     } else if (entry.isFile() && entry.name.endsWith('.html')) {
       let html = fs.readFileSync(file, 'utf8');
       if (!/<\/head\s*>/i.test(html)) throw new Error(`${file}: missing closing head tag`);
+      const prefix = path.relative(directory, root).split(path.sep).join('/');
+      const asset = (name) => prefix ? `${prefix}/${name}` : name;
       const additions = [];
-      if (!/<link\b[^>]*href=["']\/analytics\.css["']/i.test(html)) additions.push('  <link rel="stylesheet" href="/analytics.css">');
-      if (!/<script\b[^>]*src=["']\/analytics\.js["']/i.test(html)) additions.push('  <script src="/analytics.js" defer></script>');
+      if (!/<link\b[^>]*href=["'](?:\/|(?:\.\.\/)*)analytics\.css["']/i.test(html)) additions.push(`  <link rel="stylesheet" href="${asset('analytics.css')}">`);
+      if (!/<script\b[^>]*src=["'](?:\/|(?:\.\.\/)*)analytics\.js["']/i.test(html)) additions.push(`  <script src="${asset('analytics.js')}" defer></script>`);
       if (additions.length) {
         html = html.replace(/<\/head\s*>/i, `${additions.join('\n')}\n</head>`);
         fs.writeFileSync(file, html);
